@@ -6,7 +6,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.widget.FrameLayout
 
-internal class ExpandedBottomSheetDialog @JvmOverloads constructor(context: Context, theme: Int = 0)
+class ExpandedBottomSheetDialog @JvmOverloads constructor(context: Context, theme: Int = 0)
     : BottomSheetDialog(context, theme) {
     private var behavior: BottomSheetBehavior<FrameLayout>? = null
 

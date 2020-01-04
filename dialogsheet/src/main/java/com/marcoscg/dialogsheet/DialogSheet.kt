@@ -28,7 +28,6 @@ import com.marcoscg.dialogsheet.Utils.getAttrColor
 import com.marcoscg.dialogsheet.Utils.getTextColor
 import com.marcoscg.dialogsheet.Utils.getTextColorSec
 import com.marcoscg.dialogsheet.Utils.isColorLight
-import kotlinx.android.synthetic.main.layout_bottomdialog_content.*
 
 /**
  * Created by @MarcosCGdev on 01/12/2017.
@@ -470,4 +469,12 @@ class DialogSheet(private val context: Context) {
     init {
         init(context)
     }
+
+    fun positiveButton(context: Context, block: ButtonBuilder.() -> Unit) {
+        val positiveButtonBuilder = ButtonBuilder(context)
+        positiveButtonBuilder.apply(block)
+        positiveButtonBuilder.build(context)
+    }
+
+
 }
