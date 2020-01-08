@@ -25,10 +25,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun createAndShowDSLDialog() {
         val dialogSheet = dialogSheet(this) {
-            titleRes = R.string.app_name
-            title = "ASASAS"
-            message = this@MainActivity.getString(R.string.lorem)
             coloredNavigationBar = true
+            dialogIconRes = R.mipmap.ic_launcher
+            title {
+                titleRes = R.string.app_name
+            }
+            coloredNavigationBar = true
+            message {
+                messageRes = R.string.lorem
+            }
             positiveButton {
                 text = "POSITIVE"
                 onClick {

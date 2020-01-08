@@ -11,9 +11,6 @@ android {
         versionName "2.0.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    viewBinding {
-        enabled = true
-    }
     buildTypes {
         release {
             minifyEnabled false
@@ -23,10 +20,13 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation "androidx.appcompat:appcompat:1.1.0"
+    implementation "com.google.android.material:material:1.2.0-alpha03"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
+
 }
 repositories {
+    google()
     mavenCentral()
 }

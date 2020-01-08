@@ -2,152 +2,81 @@ package com.marcoscg.dialogsheet.dsl
 
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
+import androidx.annotation.*
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.marcoscg.dialogsheet.*
 import com.marcoscg.dialogsheet.Utils
 import com.marcoscg.dialogsheet.Utils.dpToPx
+import com.marcoscg.dialogsheet.Utils.gone
+import com.marcoscg.dialogsheet.Utils.isVisible
+import com.marcoscg.dialogsheet.Utils.visible
+import com.marcoscg.dialogsheet.dsl.button.Button
+import com.marcoscg.dialogsheet.dsl.button.ButtonBuilder
+import com.marcoscg.dialogsheet.dsl.message.Message
+import com.marcoscg.dialogsheet.dsl.message.MessageBuilder
+import com.marcoscg.dialogsheet.dsl.title.Title
+import com.marcoscg.dialogsheet.dsl.title.TitleBuilder
 
 class DialogSheetBuilder constructor(private val context: Context) {
 
-    /*
-     * User accessible properties
-     */
-
-    @StringRes
-    var messageRes: Int = -1
-    var message: String = ""
-    var messageSequence: CharSequence = ""
-
-    @StringRes
-    var titleRes: Int = -1
-    var title: String = ""
-    var titleSequence: CharSequence = ""
-
-    var coloredNavigationBar = false
-
-    @ColorRes
-    var titleColorRes: Int = -1
-    @ColorInt
-    var titleColor: Int = -1
-
-    @ColorRes
-    var backgroundColorRes: Int = -1
-    @ColorInt
-    var backgroundColor: Int = -1
-
-    @ColorRes
-    var messageColorRes: Int = -1
-    @ColorInt
-    var messageColor: Int = -1
-
     private var bottomSheetDialog: ExpandedBottomSheetDialog
-    private var messageTextColor = 0
     private lateinit var titleTextView: AppCompatTextView
     private lateinit var messageTextView: AppCompatTextView
     private lateinit var iconImageView: AppCompatImageView
     private lateinit var positiveButton: MaterialButton
     private lateinit var negativeButton: MaterialButton
     private lateinit var neutralButton: MaterialButton
-    private lateinit var textContainer: RelativeLayout
-    private lateinit var messageContainer: LinearLayout
     lateinit var inflatedView: View
         private set
 
-    private var _title: String? = null
-        get() {
-            _title = when {
-                title.isNotEmpty() -> {
-                    title
-                }
-                titleSequence.isNotEmpty() -> {
-                    titleSequence.toString()
-                }
-                titleRes != -1 -> {
-                    context.getString(titleRes)
-                }
-                else -> {
-                    ""
-                }
-            }
-            return field
-        }
+    var coloredNavigationBar = true
 
-    private var _message: String? = null
-        get() {
-            _message = when {
-                message.isNotEmpty() -> {
-                    title
-                }
-                messageSequence.isNotEmpty() -> {
-                    messageSequence.toString()
-                }
-                messageRes != -1 -> {
-                    context.getString(messageRes)
-                }
-                else -> {
-                    ""
-                }
-            }
-            return field
-        }
+    @ColorInt
+    var accentColor: Int = -1
+    @ColorRes
+    var accentColorRes: Int = -1
 
-    private var _titleColor: Int = -1
+    @ColorRes
+    var backgroundColorRes: Int = -1
+    @ColorInt
+    var backgroundColor: Int = -1
+
+    @DrawableRes
+    var dialogIconRes: Int = -1
+    var dialogIconBitmap: Bitmap? = null
+    var dialogIconDrawable: Drawable? = null
+
+    private var _accentColor = -1
         get() {
             field = when {
-                titleColor != -1 -> titleColor
-                titleColorRes != -1 -> titleColorRes
-                else -> -1
+                accentColor != -1 -> accentColor
+                accentColorRes != -1 -> ContextCompat.getColor(context, accentColorRes)
+                else -> Color.BLACK
             }
             return field
         }
 
-    private var _backgroundColor = 0
+    private var _backgroundColor = -1
         get() {
             field = when {
                 backgroundColor != -1 -> backgroundColor
-                backgroundColorRes != -1 -> backgroundColorRes
+                backgroundColorRes != -1 -> ContextCompat.getColor(context, backgroundColorRes)
                 else -> -1
             }
             return field
         }
 
-    private var _messageColor = 0
-        get() {
-            field = when {
-                messageColor != -1 -> messageColor
-                messageColorRes != -1 -> messageColorRes
-                else -> -1
-            }
-            return field
-        }
-
-    init {
-        val accentColor = Utils.getAttrColor(context, R.attr.dialogSheetAccent)
-        var posButtonTextColor = Color.WHITE
-        if (accentColor != -1) {
-            bottomSheetDialog = ExpandedBottomSheetDialog(context, R.style.DialogSheetTheme_Colored)
-            posButtonTextColor = Utils.getTextColor(accentColor)
-        } else {
-            bottomSheetDialog = ExpandedBottomSheetDialog(context, R.style.DialogSheetTheme)
-        }
-        bottomSheetDialog.setContentView(R.layout.layout_bottomdialog)
-        if (bottomSheetDialog.window != null) bottomSheetDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        findViews()
-        positiveButton.setTextColor(posButtonTextColor)
-    }
 
     private fun findViews() {
         bottomSheetDialog.apply {
@@ -157,78 +86,150 @@ class DialogSheetBuilder constructor(private val context: Context) {
             positiveButton = findViewById(R.id.buttonPositive)!!
             negativeButton = findViewById(R.id.buttonNegative)!!
             neutralButton = findViewById(R.id.buttonNeutral)!!
-            textContainer = findViewById(R.id.textContainer)!!
-            messageContainer = findViewById(R.id.messageContainer)!!
         }
+    }
+
+    init {
+        accentColor = Utils.getAttrColor(context, R.attr.dialogSheetAccent)
+        bottomSheetDialog = if (accentColor != -1) {
+            ExpandedBottomSheetDialog(context, R.style.DialogSheetTheme_Colored)
+        } else {
+            ExpandedBottomSheetDialog(context, R.style.DialogSheetTheme)
+        }
+        bottomSheetDialog.apply {
+            setContentView(R.layout.layout_bottomdialog)
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+        findViews()
+        setColors()
     }
 
     fun positiveButton(block: ButtonBuilder.() -> Unit)  {
         val button: Button
         val positiveButtonBuilder = ButtonBuilder(context)
-        button = positiveButtonBuilder.apply(block).build(context)
-        positiveButton.visibility = View.VISIBLE
+        button = positiveButtonBuilder.apply(block).build()
+        positiveButton.visible()
         positiveButton.text = button.text
+        if (button.color == -1 && _accentColor != -1)
+            positiveButton.setBackgroundColor(_accentColor)
+        else
+            positiveButton.setBackgroundColor(button.color)
         positiveButton.setOnClickListener { button.onClick(positiveButton) }
     }
 
     fun negativeButton(block: ButtonBuilder.() -> Unit)  {
         val button: Button
         val negativeButtonBuilder = ButtonBuilder(context)
-        button = negativeButtonBuilder.apply(block).build(context)
-        negativeButton.visibility = View.VISIBLE
+        button = negativeButtonBuilder.apply(block).build()
+        negativeButton.visible()
         negativeButton.text = button.text
+        if (button.color == -1 && _accentColor != -1)
+            negativeButton.setTextColor(_accentColor)
+        else
+            negativeButton.setTextColor(button.color)
         negativeButton.setOnClickListener { button.onClick(negativeButton) }
     }
 
     fun neutralButton(block: ButtonBuilder.() -> Unit)  {
         val button: Button
         val neutralButtonBuilder = ButtonBuilder(context)
-        button = neutralButtonBuilder.apply(block).build(context)
-        neutralButton.visibility = View.VISIBLE
+        button = neutralButtonBuilder.apply(block).build()
+        neutralButton.visible()
         neutralButton.text = button.text
+        if (button.color == -1 && _accentColor != -1)
+            neutralButton.setTextColor(_accentColor)
+        else
+            neutralButton.setTextColor(button.color)
         neutralButton.setOnClickListener { button.onClick(neutralButton) }
     }
 
+    fun message(block: MessageBuilder.() -> Unit) {
+        val message: Message
+        val messageBuilder = MessageBuilder(context)
+        message = messageBuilder.apply(block).build()
+        if (message.text.isNotEmpty()) {
+            messageTextView.visible()
+            messageTextView.text = message.text
+            if (message.color == -1) {
+               messageTextView.setTextColor(Utils.getTextColorSec(backgroundColor))
+            } else {
+                messageTextView.setTextColor(message.color)
+            }
+        }
+    }
+
+    fun title(block: TitleBuilder.() -> Unit) {
+        val title: Title
+        val titleBuilder = TitleBuilder(context)
+        title = titleBuilder.apply(block).build()
+        if (title.text.isNotEmpty()) {
+            titleTextView.visible()
+            titleTextView.text = title.text
+            if (title.color == -1) {
+                titleTextView.setTextColor(Utils.getTextColor(backgroundColor))
+            } else {
+                titleTextView.setTextColor(title.color)
+            }
+        }
+    }
 
     fun build(): DialogSheet {
-        titleTextView.text = _title
-        titleTextView.visibility = View.VISIBLE
-        messageTextView.text = _message
-        messageTextView.visibility = View.VISIBLE
+        setupIcon()
+        setupBackground()
         show()
-        return DialogSheet(context, bottomSheetDialog, _backgroundColor, _titleColor, _messageColor, coloredNavigationBar, titleTextView, messageTextView, iconImageView, positiveButton, negativeButton, neutralButton, textContainer, messageContainer/*, inflatedView*/)
+        return DialogSheet(context, bottomSheetDialog, _backgroundColor, coloredNavigationBar, titleTextView, messageTextView, iconImageView, positiveButton, negativeButton, neutralButton )
+    }
+
+    private fun setupIcon() {
+        iconImageView.visible()
+        when {
+            dialogIconBitmap != null -> iconImageView.setImageBitmap(dialogIconBitmap)
+            dialogIconDrawable != null -> iconImageView.setImageDrawable(dialogIconDrawable)
+            dialogIconRes != -1 -> iconImageView.setImageResource(dialogIconRes)
+            else -> iconImageView.gone()
+        }
+    }
+
+    private fun setupBackground() {
+        _backgroundColor =  when {
+            backgroundColor != -1 -> backgroundColor
+            backgroundColorRes != -1 -> ContextCompat.getColor(context, backgroundColorRes)
+            else -> Utils.getAttrColor(context, android.R.attr.windowBackground)
+        }
+        bottomSheetDialog.findViewById<View>(R.id.mainDialogContainer)?.background?.colorFilter =
+                PorterDuffColorFilter(_backgroundColor, PorterDuff.Mode.SRC_IN)
     }
 
     fun show() {
-        setColors()
-        setVisibility()
+        setSpacing()
+        setColoredNavBar(coloredNavigationBar)
         bottomSheetDialog.show()
         // Landscape fixed width
         val configuration = context.resources.configuration
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
-                configuration.screenWidthDp > 400) {
-            if (bottomSheetDialog.window != null) bottomSheetDialog.window!!.setLayout(400.dpToPx(), -1)
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && configuration.screenWidthDp > 400) {
+            bottomSheetDialog.window?.setLayout(400.dpToPx(), -1)
         }
     }
 
-    private fun setVisibility() {
-        if (positiveButton.visibility != View.VISIBLE) {
-            (negativeButton.layoutParams as RelativeLayout.LayoutParams).addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+    private fun setSpacing() {
+        if (!iconImageView.isVisible()) {
+            if (titleTextView.isVisible())
+                titleTextView.setPadding(0, 24.dpToPx(), 0, 0)
+            else
+                messageTextView.setPadding(0, 12.dpToPx(), 0, 0)
         }
+    }
 
-        if (!areButtonsVisible()) {
-            var bottomPadding = 0
-            var topPadding = 0
-            if (!messageTextView.text.isNullOrEmpty()) {
-                bottomPadding = 24.dpToPx()
-                if (titleTextView.text.isNullOrEmpty()) {
-                    topPadding = 24.dpToPx()
-                }
-            }
-            textContainer.setPadding(0, topPadding, 0, bottomPadding)
+    private fun setColors() {
+        if (_accentColor != -1) {
+            positiveButton.setBackgroundColor(_accentColor)
+            positiveButton.setTextColor(Utils.getTextColor(_accentColor))
+            negativeButton.setTextColor(_accentColor)
+            neutralButton.setTextColor(_accentColor)
+            titleTextView.setTextColor(Utils.getTextColor(backgroundColor))
+            messageTextView.setTextColor(Utils.getTextColorSec(backgroundColor))
         } else {
-            if ((titleTextView.text == null || TextUtils.isEmpty(titleTextView.text))
-                    && messageTextView.text != null && !TextUtils.isEmpty(messageTextView.text)) textContainer.setPadding(0, 24.dpToPx(), 0, 0)
+            positiveButton.setTextColor(Color.WHITE)
         }
     }
 
@@ -254,32 +255,5 @@ class DialogSheetBuilder constructor(private val context: Context) {
                 }
             }
         }
-    }
-
-    fun setColors() {
-        if (_backgroundColor == -1) {
-            backgroundColor = Utils.getAttrColor(context, android.R.attr.windowBackground)
-        } else {
-            bottomSheetDialog.apply {
-                val bgView = findViewById<View>(R.id.mainDialogContainer)
-                bgView?.background?.colorFilter =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            BlendModeColorFilter(_backgroundColor, BlendMode.SRC_ATOP)
-                        } else {
-                            PorterDuffColorFilter(_backgroundColor, PorterDuff.Mode.SRC_IN)
-                        }
-            }
-        }
-
-        if (_titleColor == -1) _titleColor = Utils.getTextColor(backgroundColor)
-        if (_messageColor == -1) messageTextColor = Utils.getTextColorSec(backgroundColor)
-
-        titleTextView.setTextColor(_titleColor)
-        messageTextView.setTextColor(_messageColor)
-        setColoredNavBar(coloredNavigationBar)
-    }
-
-    private fun areButtonsVisible(): Boolean {
-        return positiveButton.visibility == View.VISIBLE || negativeButton.visibility == View.VISIBLE || neutralButton.visibility == View.VISIBLE
     }
 }

@@ -2,10 +2,15 @@ package com.marcoscg.dialogsheet
 
 import android.content.Context
 import android.content.res.Resources
+import android.content.res.Resources.NotFoundException
 import android.graphics.Color
-import androidx.annotation.ColorInt
 import android.util.TypedValue
+import android.view.View
+import androidx.annotation.ColorInt
+import androidx.core.content.res.ResourcesCompat
+import com.google.android.material.button.MaterialButton
 import kotlin.math.roundToInt
+
 
 /**
  * Created by @MarcosCGdev on 01/12/2017.
@@ -50,6 +55,36 @@ internal object Utils {
         val color = a.getColor(0, -1)
         a.recycle()
         return color
+    }
+
+    fun areButtonsVisible(positiveButton: MaterialButton, negativeButton: MaterialButton, neutralButton: MaterialButton): Boolean {
+        return positiveButton.visibility == View.VISIBLE || negativeButton.visibility == View.VISIBLE || neutralButton.visibility == View.VISIBLE
+    }
+
+    fun Int.isColorRes(context: Context): Boolean {
+        return try {
+            ResourcesCompat.getColor(context.resources, this, null)
+            true
+        } catch (e: NotFoundException) {
+            false
+        }
+    }
+
+    fun View.isVisible(): Boolean {
+        return this.visibility == View.VISIBLE
+    }
+
+    fun View.visible() {
+        this.visibility = View.VISIBLE
+    }
+
+    fun View.invisible() {
+        this.visibility = View.INVISIBLE
+    }
+
+    fun View.gone() {
+        this.visibility = View.GONE
+
     }
 
     fun Int.dpToPx(): Int {
