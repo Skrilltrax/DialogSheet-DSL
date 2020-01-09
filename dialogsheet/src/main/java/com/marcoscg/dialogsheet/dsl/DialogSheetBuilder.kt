@@ -8,6 +8,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.*
@@ -57,26 +59,17 @@ class DialogSheetBuilder constructor(private val context: Context) {
     var dialogIconBitmap: Bitmap? = null
     var dialogIconDrawable: Drawable? = null
 
+    private var _backgroundColor = Utils.getAttrColor(context, android.R.attr.windowBackground)
+
     private var _accentColor = -1
         get() {
             field = when {
                 accentColor != -1 -> accentColor
                 accentColorRes != -1 -> ContextCompat.getColor(context, accentColorRes)
-                else -> Color.BLACK
+                else -> Utils.getTextColor(_backgroundColor)
             }
             return field
         }
-
-    private var _backgroundColor = -1
-        get() {
-            field = when {
-                backgroundColor != -1 -> backgroundColor
-                backgroundColorRes != -1 -> ContextCompat.getColor(context, backgroundColorRes)
-                else -> -1
-            }
-            return field
-        }
-
 
     private fun findViews() {
         bottomSheetDialog.apply {
@@ -110,10 +103,16 @@ class DialogSheetBuilder constructor(private val context: Context) {
         button = positiveButtonBuilder.apply(block).build()
         positiveButton.visible()
         positiveButton.text = button.text
-        if (button.color == -1 && _accentColor != -1)
+        if (button.typeface != null)
+            positiveButton.typeface = button.typeface
+        if (button.color == -1) {
             positiveButton.setBackgroundColor(_accentColor)
-        else
+            positiveButton.setTextColor(Utils.getTextColor(_accentColor))
+        }
+        else {
             positiveButton.setBackgroundColor(button.color)
+            positiveButton.setTextColor(Utils.getTextColor(button.color))
+        }
         positiveButton.setOnClickListener { button.onClick(positiveButton) }
     }
 
@@ -123,7 +122,9 @@ class DialogSheetBuilder constructor(private val context: Context) {
         button = negativeButtonBuilder.apply(block).build()
         negativeButton.visible()
         negativeButton.text = button.text
-        if (button.color == -1 && _accentColor != -1)
+        if (button.typeface != null)
+            negativeButton.typeface = button.typeface
+        if (button.color == -1)
             negativeButton.setTextColor(_accentColor)
         else
             negativeButton.setTextColor(button.color)
@@ -136,7 +137,9 @@ class DialogSheetBuilder constructor(private val context: Context) {
         button = neutralButtonBuilder.apply(block).build()
         neutralButton.visible()
         neutralButton.text = button.text
-        if (button.color == -1 && _accentColor != -1)
+        if (button.typeface != null)
+            neutralButton.typeface = button.typeface
+        if (button.color == -1)
             neutralButton.setTextColor(_accentColor)
         else
             neutralButton.setTextColor(button.color)
@@ -150,6 +153,9 @@ class DialogSheetBuilder constructor(private val context: Context) {
         if (message.text.isNotEmpty()) {
             messageTextView.visible()
             messageTextView.text = message.text
+            messageTextView.textSize = message.textSize.toFloat()
+            if (message.typeface != null)
+                messageTextView.typeface = message.typeface
             if (message.color == -1) {
                messageTextView.setTextColor(Utils.getTextColorSec(backgroundColor))
             } else {
@@ -165,6 +171,10 @@ class DialogSheetBuilder constructor(private val context: Context) {
         if (title.text.isNotEmpty()) {
             titleTextView.visible()
             titleTextView.text = title.text
+            titleTextView.textSize = title.textSize.toFloat()
+            titleTextView.isSingleLine = title.singleLineTitle
+            if (title.typeface != null)
+                titleTextView.typeface = title.typeface
             if (title.color == -1) {
                 titleTextView.setTextColor(Utils.getTextColor(backgroundColor))
             } else {

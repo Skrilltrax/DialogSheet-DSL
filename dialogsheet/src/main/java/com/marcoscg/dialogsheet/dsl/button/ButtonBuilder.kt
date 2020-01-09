@@ -1,7 +1,7 @@
 package com.marcoscg.dialogsheet.dsl.button
 
 import android.content.Context
-import android.graphics.Color
+import android.graphics.Typeface
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -15,9 +15,11 @@ class ButtonBuilder(private val context: Context) {
     var textSequence: CharSequence = ""
 
     @ColorRes
-    var textColorRes: Int = -1
+    var buttonColorRes: Int = -1
     @ColorInt
-    var textColor: Int = -1
+    var buttonColor: Int = -1
+
+    var typeface: Typeface? = null
 
     private var _text: String = ""
         get() {
@@ -31,11 +33,11 @@ class ButtonBuilder(private val context: Context) {
         }
 
     @ColorInt
-    private var _textColor = -1
+    private var _buttonColor = -1
         get() {
             field = when {
-                textColor != -1 -> textColor
-                textColorRes != -1 -> ContextCompat.getColor(context, textColorRes)
+                buttonColor != -1 -> buttonColor
+                buttonColorRes != -1 -> ContextCompat.getColor(context, buttonColorRes)
                 else -> -1
             }
             return field
@@ -48,5 +50,5 @@ class ButtonBuilder(private val context: Context) {
         onClick = block
     }
 
-    fun build(): Button = Button(_text, _textColor, shouldDismiss, onClick)
+    fun build(): Button = Button(_text, _buttonColor, shouldDismiss, onClick, typeface)
 }
