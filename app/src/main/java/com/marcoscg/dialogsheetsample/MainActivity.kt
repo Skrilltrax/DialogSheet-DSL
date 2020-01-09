@@ -28,16 +28,15 @@ class MainActivity : AppCompatActivity() {
     private fun createAndShowDSLDialog() {
         val dialogSheet = dialogSheet(this) {
             coloredNavigationBar = true
-            dialogIconRes = R.mipmap.ic_launcher
+//            dialogIconRes = R.mipmap.ic_launcher
+            viewRes = R.layout.custom_dialog_view
             title {
                 textRes = R.string.app_name
                 textColorRes = R.color.colorAccent
-                textSize = 60
             }
-            message {
-                textRes = R.string.lorem
-                textSize = 12
-            }
+//            message {
+//                textRes = R.string.lorem
+//            }
             positiveButton {
                 text = "POSITIVE"
                 onClick {

@@ -8,14 +8,24 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.annotation.*
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import com.google.android.material.button.MaterialButton
-import com.marcoscg.dialogsheet.*
+import com.marcoscg.dialogsheet.ExpandedBottomSheetDialog
+import com.marcoscg.dialogsheet.R
 import com.marcoscg.dialogsheet.Utils
 import com.marcoscg.dialogsheet.Utils.dpToPx
 import com.marcoscg.dialogsheet.Utils.gone
@@ -38,8 +48,9 @@ class DialogSheetBuilder constructor(private val context: Context) {
     private lateinit var positiveButton: MaterialButton
     private lateinit var negativeButton: MaterialButton
     private lateinit var neutralButton: MaterialButton
-    lateinit var inflatedView: View
-        private set
+    private lateinit var buttonPanel: LinearLayoutCompat
+    /*lateinit var inflatedView: View
+        private set*/
 
     var coloredNavigationBar = true
 
@@ -58,6 +69,10 @@ class DialogSheetBuilder constructor(private val context: Context) {
     var dialogIconBitmap: Bitmap? = null
     var dialogIconDrawable: Drawable? = null
 
+    @LayoutRes
+    var viewRes: Int = -1
+    var view: View? = null
+
     private var _backgroundColor = Utils.getAttrColor(context, android.R.attr.windowBackground)
 
     private var _accentColor = -1
@@ -70,6 +85,16 @@ class DialogSheetBuilder constructor(private val context: Context) {
             return field
         }
 
+    private var _inflatedView: View? = null
+        get() {
+            field = when {
+                view != null -> view
+                viewRes != -1 -> View.inflate(context, viewRes, null)
+                else -> null
+            }
+            return field
+        }
+
     private fun findViews() {
         bottomSheetDialog.apply {
             titleTextView = findViewById(R.id.dialogTitle)!!
@@ -78,6 +103,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
             positiveButton = findViewById(R.id.buttonPositive)!!
             negativeButton = findViewById(R.id.buttonNegative)!!
             neutralButton = findViewById(R.id.buttonNeutral)!!
+            buttonPanel = findViewById(R.id.buttonPanel)!!
         }
     }
 
@@ -118,6 +144,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
             }
             visible()
         }
+        buttonPanel.visible()
     }
 
     fun negativeButton(block: ButtonBuilder.() -> Unit)  {
@@ -134,6 +161,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
             }
             visible()
         }
+        buttonPanel.visible()
     }
 
     fun neutralButton(block: ButtonBuilder.() -> Unit)  {
@@ -150,6 +178,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
             }
             visible()
         }
+        buttonPanel.visible()
     }
 
     fun message(block: MessageBuilder.() -> Unit) {
@@ -163,7 +192,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
             if (message.typeface != null)
                 messageTextView.typeface = message.typeface
             if (message.color == -1) {
-               messageTextView.setTextColor(Utils.getTextColorSec(backgroundColor))
+                messageTextView.setTextColor(Utils.getTextColorSec(backgroundColor))
             } else {
                 messageTextView.setTextColor(message.color)
             }
@@ -216,9 +245,50 @@ class DialogSheetBuilder constructor(private val context: Context) {
                 PorterDuffColorFilter(_backgroundColor, PorterDuff.Mode.SRC_IN)
     }
 
+    private fun setupCustomView() {
+        if (_inflatedView != null) {
+            Log.d("customView", "HEEEREEEEEEE")
+            val viewGroup = _inflatedView?.rootView as ViewGroup
+            val mainContainer = bottomSheetDialog.findViewById<ConstraintLayout>(R.id.mainDialogContainer)!!
+            val constraintSet = ConstraintSet()
+            _inflatedView?.id = ViewCompat.generateViewId()
+            for (i in 0 until viewGroup.childCount) {
+                viewGroup.getChildAt(i).id = ViewCompat.generateViewId()
+            }
+            mainContainer.addView(viewGroup)
+            constraintSet.clone(mainContainer)
+
+            val constraintStart = when {
+                messageTextView.isVisible() -> messageTextView.id
+                titleTextView.isVisible() -> titleTextView.id
+                else -> ConstraintSet.START
+            }
+            val constraintEnd = when {
+                messageTextView.isVisible() -> messageTextView.id
+                titleTextView.isVisible() -> titleTextView.id
+                else -> ConstraintSet.END
+            }
+            val constraintTop = when {
+                messageTextView.isVisible() -> messageTextView.id
+                titleTextView.isVisible() -> titleTextView.id
+                else -> ConstraintSet.TOP
+            }
+            val constraintBottom = when {
+                buttonPanel.isVisible() -> buttonPanel.id
+                else -> ConstraintSet.BOTTOM
+            }
+            constraintSet.addToVerticalChain(viewGroup.id, constraintTop, constraintBottom)
+            constraintSet.connect(viewGroup.id, ConstraintSet.LEFT, constraintStart, ConstraintSet.LEFT)
+            constraintSet.setHorizontalBias(viewGroup.id, 0.0f)
+            constraintSet.applyTo(mainContainer)
+        }
+
+    }
+
     fun show() {
         setSpacing()
         setColoredNavBar(coloredNavigationBar)
+        setupCustomView()
         bottomSheetDialog.show()
         // Landscape fixed width
         val configuration = context.resources.configuration
@@ -228,11 +298,8 @@ class DialogSheetBuilder constructor(private val context: Context) {
     }
 
     private fun setSpacing() {
-        if (!iconImageView.isVisible()) {
-            if (titleTextView.isVisible())
-                titleTextView.setPadding(0, 24.dpToPx(), 0, 0)
-            else
-                messageTextView.setPadding(0, 12.dpToPx(), 0, 0)
+        if (!titleTextView.isVisible()) {
+                messageTextView.setPadding(0, 24.dpToPx(), 0, 0)
         }
     }
 

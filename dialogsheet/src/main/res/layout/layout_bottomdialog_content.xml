@@ -17,7 +17,7 @@
         android:layout_marginLeft="24dp"
         android:layout_marginStart="24dp"
         android:scaleType="centerCrop"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -26,13 +26,14 @@
         android:id="@+id/dialogTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
         android:textColor="#000000"
         android:ellipsize="end"
-        android:visibility="visible"
-        app:layout_constraintTop_toTopOf="@id/dialogIcon"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/dialogIcon"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="Title"
@@ -50,61 +51,71 @@
         android:layout_marginRight="24dp"
         android:layout_marginBottom="16dp"
         android:textColor="#757575"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/dialogTitle"
         app:layout_constraintStart_toEndOf="@id/dialogIcon"
-        app:layout_constraintBottom_toTopOf="@id/buttonPositive"
+        app:layout_constraintBottom_toTopOf="@id/buttonPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_bias="0.0"
         style="@style/TextAppearance.AppCompat.Subhead"
         />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonNeutral"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/buttonPanel"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="@android:string/cancel"
-        android:textColor="?colorAccent"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:visibility="visible"
-        android:letterSpacing="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/Widget.MaterialComponents.Button.TextButton" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonNegative"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@android:string/cancel"
-        android:textColor="?colorAccent"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:visibility="visible"
-        android:letterSpacing="0"
-        app:layout_constraintEnd_toStartOf="@id/buttonPositive"
-        app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/Widget.MaterialComponents.Button.TextButton"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonPositive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:text="@android:string/ok"
-        android:textColor="@android:color/white"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:visibility="visible"
-        android:letterSpacing="0"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/Widget.MaterialComponents.Button"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonNeutral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@android:string/cancel"
+            android:textColor="?colorAccent"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+            android:visibility="gone"
+            android:letterSpacing="0"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/innerButtonPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonNegative"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@android:string/cancel"
+                android:textColor="?colorAccent"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:visibility="gone"
+                android:letterSpacing="0"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPositive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@android:string/ok"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:visibility="gone"
+                android:letterSpacing="0"
+                style="@style/Widget.MaterialComponents.Button"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.constraintlayout.widget.ConstraintLayout>
