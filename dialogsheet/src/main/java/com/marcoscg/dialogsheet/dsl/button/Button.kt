@@ -10,5 +10,6 @@ data class Button(
         var color: Int = -1,
         var shouldDismiss: Boolean = true,
         var onClick: (View) -> Unit = {},
-        var typeface: Typeface?
+        var typeface: Typeface?,
+        var textAllCaps: Boolean
 )

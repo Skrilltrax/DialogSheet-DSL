@@ -7,7 +7,9 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import com.marcoscg.dialogsheet.dsl.DialogSheetDsl
 
+@DialogSheetDsl
 class ButtonBuilder(private val context: Context) {
     @StringRes
     var textRes: Int = -1
@@ -20,6 +22,10 @@ class ButtonBuilder(private val context: Context) {
     var buttonColor: Int = -1
 
     var typeface: Typeface? = null
+    var textAllCaps: Boolean = true
+    var shouldDismiss: Boolean = true
+
+    private var onClick: (View) -> Unit = {}
 
     private var _text: String = ""
         get() {
@@ -43,12 +49,9 @@ class ButtonBuilder(private val context: Context) {
             return field
         }
 
-    var shouldDismiss: Boolean = true
-    private var onClick: (View) -> Unit = {}
-
     fun onClick(block: (View) -> Unit) {
         onClick = block
     }
 
-    fun build(): Button = Button(_text, _buttonColor, shouldDismiss, onClick, typeface)
+    fun build(): Button = Button(_text, _buttonColor, shouldDismiss, onClick, typeface, textAllCaps)
 }

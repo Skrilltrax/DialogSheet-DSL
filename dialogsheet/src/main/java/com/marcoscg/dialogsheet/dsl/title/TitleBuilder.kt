@@ -7,7 +7,9 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import com.marcoscg.dialogsheet.dsl.DialogSheetDsl
 
+@DialogSheetDsl
 class TitleBuilder(private val context: Context) {
 
     @StringRes

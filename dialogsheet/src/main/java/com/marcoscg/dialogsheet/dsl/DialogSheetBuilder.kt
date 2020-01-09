@@ -8,8 +8,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.*
@@ -30,6 +28,7 @@ import com.marcoscg.dialogsheet.dsl.message.MessageBuilder
 import com.marcoscg.dialogsheet.dsl.title.Title
 import com.marcoscg.dialogsheet.dsl.title.TitleBuilder
 
+@DialogSheetDsl
 class DialogSheetBuilder constructor(private val context: Context) {
 
     private var bottomSheetDialog: ExpandedBottomSheetDialog
@@ -98,52 +97,59 @@ class DialogSheetBuilder constructor(private val context: Context) {
     }
 
     fun positiveButton(block: ButtonBuilder.() -> Unit)  {
-        val button: Button
-        val positiveButtonBuilder = ButtonBuilder(context)
-        button = positiveButtonBuilder.apply(block).build()
-        positiveButton.visible()
-        positiveButton.text = button.text
-        if (button.typeface != null)
-            positiveButton.typeface = button.typeface
-        if (button.color == -1) {
-            positiveButton.setBackgroundColor(_accentColor)
-            positiveButton.setTextColor(Utils.getTextColor(_accentColor))
+        val button: Button = ButtonBuilder(context).apply(block).build()
+        positiveButton.apply {
+
+            positiveButton.text = button.text
+            positiveButton.isAllCaps = button.textAllCaps
+            if (button.typeface != null)
+                positiveButton.typeface = button.typeface
+            if (button.color == -1) {
+                positiveButton.setBackgroundColor(_accentColor)
+                positiveButton.setTextColor(Utils.getTextColor(_accentColor))
+            }
+            else {
+                positiveButton.setBackgroundColor(button.color)
+                positiveButton.setTextColor(Utils.getTextColor(button.color))
+            }
+            positiveButton.setOnClickListener {
+                if (button.shouldDismiss) bottomSheetDialog.dismiss()
+                button.onClick(positiveButton)
+            }
+            visible()
         }
-        else {
-            positiveButton.setBackgroundColor(button.color)
-            positiveButton.setTextColor(Utils.getTextColor(button.color))
-        }
-        positiveButton.setOnClickListener { button.onClick(positiveButton) }
     }
 
     fun negativeButton(block: ButtonBuilder.() -> Unit)  {
-        val button: Button
-        val negativeButtonBuilder = ButtonBuilder(context)
-        button = negativeButtonBuilder.apply(block).build()
-        negativeButton.visible()
-        negativeButton.text = button.text
-        if (button.typeface != null)
-            negativeButton.typeface = button.typeface
-        if (button.color == -1)
-            negativeButton.setTextColor(_accentColor)
-        else
-            negativeButton.setTextColor(button.color)
-        negativeButton.setOnClickListener { button.onClick(negativeButton) }
+        val button: Button = ButtonBuilder(context).apply(block).build()
+        negativeButton.apply {
+            text = button.text
+            isAllCaps = button.textAllCaps
+            if (button.typeface != null) typeface = button.typeface
+            if (button.color == -1) setTextColor(_accentColor)
+            else setTextColor(button.color)
+            setOnClickListener {
+                if (button.shouldDismiss) bottomSheetDialog.dismiss()
+                button.onClick(this)
+            }
+            visible()
+        }
     }
 
     fun neutralButton(block: ButtonBuilder.() -> Unit)  {
-        val button: Button
-        val neutralButtonBuilder = ButtonBuilder(context)
-        button = neutralButtonBuilder.apply(block).build()
-        neutralButton.visible()
-        neutralButton.text = button.text
-        if (button.typeface != null)
-            neutralButton.typeface = button.typeface
-        if (button.color == -1)
-            neutralButton.setTextColor(_accentColor)
-        else
-            neutralButton.setTextColor(button.color)
-        neutralButton.setOnClickListener { button.onClick(neutralButton) }
+        val button: Button = ButtonBuilder(context).apply(block).build()
+        neutralButton.apply {
+            text = button.text
+            isAllCaps = button.textAllCaps
+            if (button.typeface != null) typeface = button.typeface
+            if (button.color == -1) setTextColor(_accentColor)
+            else setTextColor(button.color)
+            setOnClickListener {
+                if (button.shouldDismiss) bottomSheetDialog.dismiss()
+                button.onClick(this)
+            }
+            visible()
+        }
     }
 
     fun message(block: MessageBuilder.() -> Unit) {
@@ -187,7 +193,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
         setupIcon()
         setupBackground()
         show()
-        return DialogSheet(context, bottomSheetDialog, _backgroundColor, coloredNavigationBar, titleTextView, messageTextView, iconImageView, positiveButton, negativeButton, neutralButton )
+        return DialogSheet(context, bottomSheetDialog, coloredNavigationBar,  iconImageView, titleTextView, messageTextView, positiveButton, negativeButton, neutralButton )
     }
 
     private fun setupIcon() {

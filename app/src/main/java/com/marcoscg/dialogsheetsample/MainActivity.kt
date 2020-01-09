@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             title {
                 textRes = R.string.app_name
                 textColorRes = R.color.colorAccent
-                textSize = 24
+                textSize = 60
             }
             message {
                 textRes = R.string.lorem
