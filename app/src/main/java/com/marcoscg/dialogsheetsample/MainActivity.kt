@@ -2,6 +2,7 @@ package com.marcoscg.dialogsheetsample
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import com.marcoscg.dialogsheet.DialogSheet
 import com.marcoscg.dialogsheet.DialogSheet.OnPositiveClickListener
 import com.marcoscg.dialogsheet.dsl.dialogSheet
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,10 +27,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun createAndShowDSLDialog() {
         val dialogSheet = dialogSheet(this) {
-            titleRes = R.string.app_name
-            title = "ASASAS"
-            message = this@MainActivity.getString(R.string.lorem)
             coloredNavigationBar = true
+//            dialogIconRes = R.mipmap.ic_launcher
+            viewRes = R.layout.custom_dialog_view
+            title {
+                textRes = R.string.app_name
+                textColorRes = R.color.colorAccent
+            }
+//            message {
+//                textRes = R.string.lorem
+//            }
             positiveButton {
                 text = "POSITIVE"
                 onClick {

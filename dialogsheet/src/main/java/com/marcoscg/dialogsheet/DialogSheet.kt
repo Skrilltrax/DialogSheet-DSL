@@ -28,6 +28,7 @@ import com.marcoscg.dialogsheet.Utils.getAttrColor
 import com.marcoscg.dialogsheet.Utils.getTextColor
 import com.marcoscg.dialogsheet.Utils.getTextColorSec
 import com.marcoscg.dialogsheet.Utils.isColorLight
+import com.marcoscg.dialogsheet.dsl.button.ButtonBuilder
 
 /**
  * Created by @MarcosCGdev on 01/12/2017.
@@ -419,8 +420,6 @@ class DialogSheet(private val context: Context) {
         positiveButton = bottomSheetDialog.findViewById(R.id.buttonPositive)!!
         negativeButton = bottomSheetDialog.findViewById(R.id.buttonNegative)!!
         neutralButton = bottomSheetDialog.findViewById(R.id.buttonNeutral)!!
-        textContainer = bottomSheetDialog.findViewById(R.id.textContainer)!!
-        messageContainer = bottomSheetDialog.findViewById(R.id.messageContainer)!!
         positiveButton.setTextColor(posButtonTextColor)
     }
 
@@ -469,12 +468,5 @@ class DialogSheet(private val context: Context) {
     init {
         init(context)
     }
-
-    fun positiveButton(context: Context, block: ButtonBuilder.() -> Unit) {
-        val positiveButtonBuilder = ButtonBuilder(context)
-        positiveButtonBuilder.apply(block)
-        positiveButtonBuilder.build(context)
-    }
-
 
 }

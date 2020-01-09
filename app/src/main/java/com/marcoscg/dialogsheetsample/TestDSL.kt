@@ -6,10 +6,6 @@ import com.marcoscg.dialogsheet.dsl.dialogSheet
 
 class TestDSL(private val context: Context) {
     fun noName() {
-/*        positiveButton(context) {
-            text = "HELLOOO BRO"
-            shouldDismiss = false
-        }*/
         dialogSheet(context) {
             positiveButton {
                 text = "Aditya"
@@ -17,6 +13,9 @@ class TestDSL(private val context: Context) {
                 onClick {
                 }
             }
+            negativeButton {
+
+            }
+            }
         }
     }
-}
