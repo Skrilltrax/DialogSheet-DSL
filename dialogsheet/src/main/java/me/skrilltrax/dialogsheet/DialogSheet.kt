@@ -1,4 +1,4 @@
-package com.marcoscg.dialogsheet
+package me.skrilltrax.dialogsheet
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -23,12 +23,12 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import com.marcoscg.dialogsheet.Utils.dpToPx
-import com.marcoscg.dialogsheet.Utils.getAttrColor
-import com.marcoscg.dialogsheet.Utils.getTextColor
-import com.marcoscg.dialogsheet.Utils.getTextColorSec
-import com.marcoscg.dialogsheet.Utils.isColorLight
-import com.marcoscg.dialogsheet.dsl.button.ButtonBuilder
+import me.skrilltrax.dialogsheet.dialogsheet.R
+import me.skrilltrax.dialogsheet.Utils.dpToPx
+import me.skrilltrax.dialogsheet.Utils.getAttrColor
+import me.skrilltrax.dialogsheet.Utils.getTextColor
+import me.skrilltrax.dialogsheet.Utils.getTextColorSec
+import me.skrilltrax.dialogsheet.Utils.isColorLight
 
 /**
  * Created by @MarcosCGdev on 01/12/2017.

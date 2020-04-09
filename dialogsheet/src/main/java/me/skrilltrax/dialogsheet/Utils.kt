@@ -1,4 +1,4 @@
-package com.marcoscg.dialogsheet
+package me.skrilltrax.dialogsheet
 
 import android.content.Context
 import android.content.res.Resources
@@ -11,10 +11,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.button.MaterialButton
 import kotlin.math.roundToInt
 
-
-/**
- * Created by @MarcosCGdev on 01/12/2017.
- */
 internal object Utils {
 
     @JvmStatic

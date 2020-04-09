@@ -1,8 +1,6 @@
 package com.marcoscg.dialogsheetsample
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,30 +11,49 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatCheckBox
-import com.marcoscg.dialogsheet.DialogSheet
-import com.marcoscg.dialogsheet.DialogSheet.OnPositiveClickListener
-import com.marcoscg.dialogsheet.dsl.dialogSheet
-import kotlinx.android.synthetic.main.activity_main.*
+import me.skrilltrax.dialogsheet.DialogSheet
+import me.skrilltrax.dialogsheet.DialogSheet.OnPositiveClickListener
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.dialogSheet
 
 class MainActivity : AppCompatActivity() {
+    lateinit var iconCheckBox: AppCompatCheckBox
+    lateinit var customViewCheckBox: AppCompatCheckBox
+    lateinit var cornerCheckBox: AppCompatCheckBox
+    lateinit var button: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        findViewById<View>(R.id.button).setOnClickListener { createAndShowDSLDialog() }
+        iconCheckBox = findViewById(R.id.iconCheckBox)
+        cornerCheckBox = findViewById(R.id.cornersCheckBox)
+        customViewCheckBox = findViewById(R.id.customViewCheckBox)
+        button = findViewById(R.id.button)
+        button.setOnClickListener { createAndShowDSLDialog() }
     }
 
     private fun createAndShowDSLDialog() {
         val dialogSheet = dialogSheet(this) {
             coloredNavigationBar = true
-//            dialogIconRes = R.mipmap.ic_launcher
-            viewRes = R.layout.custom_dialog_view
+
+            if (iconCheckBox.isChecked) {
+                dialogIconRes = R.mipmap.ic_launcher
+            }
+
+            if (cornerCheckBox.isChecked) {
+                setRoundedCorner = true
+            }
+
+            if (customViewCheckBox.isChecked) {
+                viewRes = R.layout.custom_dialog_view
+            }
+
             title {
                 textRes = R.string.app_name
                 textColorRes = R.color.colorAccent
             }
-//            message {
-//                textRes = R.string.lorem
-//            }
+            message {
+                textRes = R.string.lorem
+            }
             positiveButton {
                 text = "POSITIVE"
                 onClick {
@@ -49,7 +66,6 @@ class MainActivity : AppCompatActivity() {
             neutralButton {
                 text = "NEUTRAL"
             }
-            show()
         }
     }
     private fun createAndShowDialog() {
@@ -84,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_github) {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/marcoscgdev/DialogSheet")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/skrilltrax/DialogSheet")))
             return true
         }
         return super.onOptionsItemSelected(item)

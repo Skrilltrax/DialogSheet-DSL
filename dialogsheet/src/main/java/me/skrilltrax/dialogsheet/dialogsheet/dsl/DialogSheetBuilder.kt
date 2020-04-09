@@ -1,4 +1,4 @@
-package com.marcoscg.dialogsheet.dsl
+package me.skrilltrax.dialogsheet.dialogsheet.dsl
 
 import android.content.Context
 import android.content.res.Configuration
@@ -8,7 +8,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -24,19 +23,19 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.google.android.material.button.MaterialButton
-import com.marcoscg.dialogsheet.ExpandedBottomSheetDialog
-import com.marcoscg.dialogsheet.R
-import com.marcoscg.dialogsheet.Utils
-import com.marcoscg.dialogsheet.Utils.dpToPx
-import com.marcoscg.dialogsheet.Utils.gone
-import com.marcoscg.dialogsheet.Utils.isVisible
-import com.marcoscg.dialogsheet.Utils.visible
-import com.marcoscg.dialogsheet.dsl.button.Button
-import com.marcoscg.dialogsheet.dsl.button.ButtonBuilder
-import com.marcoscg.dialogsheet.dsl.message.Message
-import com.marcoscg.dialogsheet.dsl.message.MessageBuilder
-import com.marcoscg.dialogsheet.dsl.title.Title
-import com.marcoscg.dialogsheet.dsl.title.TitleBuilder
+import me.skrilltrax.dialogsheet.ExpandedBottomSheetDialog
+import me.skrilltrax.dialogsheet.dialogsheet.R
+import me.skrilltrax.dialogsheet.Utils
+import me.skrilltrax.dialogsheet.Utils.dpToPx
+import me.skrilltrax.dialogsheet.Utils.gone
+import me.skrilltrax.dialogsheet.Utils.isVisible
+import me.skrilltrax.dialogsheet.Utils.visible
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.button.Button
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.button.ButtonBuilder
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.message.Message
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.message.MessageBuilder
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.title.Title
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.title.TitleBuilder
 
 @DialogSheetDsl
 class DialogSheetBuilder constructor(private val context: Context) {
@@ -53,6 +52,7 @@ class DialogSheetBuilder constructor(private val context: Context) {
         private set*/
 
     var coloredNavigationBar = true
+    var setRoundedCorner = false
 
     @ColorInt
     var accentColor: Int = -1
@@ -125,7 +125,6 @@ class DialogSheetBuilder constructor(private val context: Context) {
     fun positiveButton(block: ButtonBuilder.() -> Unit)  {
         val button: Button = ButtonBuilder(context).apply(block).build()
         positiveButton.apply {
-
             positiveButton.text = button.text
             positiveButton.isAllCaps = button.textAllCaps
             if (button.typeface != null)
@@ -221,8 +220,12 @@ class DialogSheetBuilder constructor(private val context: Context) {
     fun build(): DialogSheet {
         setupIcon()
         setupBackground()
+        setupCorners()
+        setSpacing()
+        setColoredNavBar(coloredNavigationBar)
+        setupCustomView()
         show()
-        return DialogSheet(context, bottomSheetDialog, coloredNavigationBar,  iconImageView, titleTextView, messageTextView, positiveButton, negativeButton, neutralButton )
+         return DialogSheet(context, bottomSheetDialog, coloredNavigationBar, setRoundedCorner,  iconImageView, titleTextView, messageTextView, positiveButton, negativeButton, neutralButton )
     }
 
     private fun setupIcon() {
@@ -247,7 +250,6 @@ class DialogSheetBuilder constructor(private val context: Context) {
 
     private fun setupCustomView() {
         if (_inflatedView != null) {
-            Log.d("customView", "HEEEREEEEEEE")
             val viewGroup = _inflatedView?.rootView as ViewGroup
             val mainContainer = bottomSheetDialog.findViewById<ConstraintLayout>(R.id.mainDialogContainer)!!
             val constraintSet = ConstraintSet()
@@ -282,13 +284,18 @@ class DialogSheetBuilder constructor(private val context: Context) {
             constraintSet.setHorizontalBias(viewGroup.id, 0.0f)
             constraintSet.applyTo(mainContainer)
         }
+    }
 
+    fun setupCorners() {
+        if (setRoundedCorner) {
+            val bgView = bottomSheetDialog.findViewById<View>(R.id.mainDialogContainer)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                bgView?.background = ContextCompat.getDrawable(context, R.drawable.dialog_sheet_main_background)
+            }
+        }
     }
 
     fun show() {
-        setSpacing()
-        setColoredNavBar(coloredNavigationBar)
-        setupCustomView()
         bottomSheetDialog.show()
         // Landscape fixed width
         val configuration = context.resources.configuration

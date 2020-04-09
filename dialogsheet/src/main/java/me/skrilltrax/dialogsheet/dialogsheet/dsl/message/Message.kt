@@ -1,4 +1,4 @@
-package com.marcoscg.dialogsheet.dsl.message
+package me.skrilltrax.dialogsheet.dialogsheet.dsl.message
 
 import android.graphics.Typeface
 import androidx.annotation.ColorInt

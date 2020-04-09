@@ -1,4 +1,4 @@
-package com.marcoscg.dialogsheet
+package me.skrilltrax.dialogsheet
 
 import android.content.Context
 import android.os.Bundle

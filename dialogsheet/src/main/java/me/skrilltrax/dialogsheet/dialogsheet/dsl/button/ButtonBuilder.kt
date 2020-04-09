@@ -1,32 +1,35 @@
-package com.marcoscg.dialogsheet.dsl.message
+package me.skrilltrax.dialogsheet.dialogsheet.dsl.button
 
 import android.content.Context
 import android.graphics.Typeface
+import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.marcoscg.dialogsheet.dsl.DialogSheetDsl
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.DialogSheetDsl
 
 @DialogSheetDsl
-class MessageBuilder(private val context: Context) {
-
+class ButtonBuilder(private val context: Context) {
     @StringRes
     var textRes: Int = -1
     var text: String = ""
     var textSequence: CharSequence = ""
 
     @ColorRes
-    var textColorRes: Int = -1
+    var buttonColorRes: Int = -1
     @ColorInt
-    var textColor: Int = -1
+    var buttonColor: Int = -1
 
-    var textSize: Int = 16
     var typeface: Typeface? = null
+    var textAllCaps: Boolean = true
+    var shouldDismiss: Boolean = true
 
-    private var _message: String = ""
+    private var onClick: (View) -> Unit = {}
+
+    private var _text: String = ""
         get() {
-            _message = when {
+            _text = when {
                 text.isNotEmpty() -> text
                 textSequence.isNotEmpty() -> textSequence.toString()
                 textRes != -1 -> context.getString(textRes)
@@ -36,17 +39,19 @@ class MessageBuilder(private val context: Context) {
         }
 
     @ColorInt
-    private var _messageColor = -1
+    private var _buttonColor = -1
         get() {
             field = when {
-                textColor != -1 -> textColor
-                textColorRes != -1 -> ContextCompat.getColor(context, textColorRes)
+                buttonColor != -1 -> buttonColor
+                buttonColorRes != -1 -> ContextCompat.getColor(context, buttonColorRes)
                 else -> -1
             }
             return field
         }
 
-    fun build(): Message {
-        return Message(_message, _messageColor, typeface, textSize)
+    fun onClick(block: (View) -> Unit) {
+        onClick = block
     }
+
+    fun build(): Button = Button(_text, _buttonColor, shouldDismiss, onClick, typeface, textAllCaps)
 }

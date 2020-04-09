@@ -1,4 +1,4 @@
-package com.marcoscg.dialogsheet.dsl.button
+package me.skrilltrax.dialogsheet.dialogsheet.dsl.button
 
 import android.graphics.Typeface
 import android.view.View

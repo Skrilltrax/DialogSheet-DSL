@@ -1,35 +1,32 @@
-package com.marcoscg.dialogsheet.dsl.button
+package me.skrilltrax.dialogsheet.dialogsheet.dsl.message
 
 import android.content.Context
 import android.graphics.Typeface
-import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.marcoscg.dialogsheet.dsl.DialogSheetDsl
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.DialogSheetDsl
 
 @DialogSheetDsl
-class ButtonBuilder(private val context: Context) {
+class MessageBuilder(private val context: Context) {
+
     @StringRes
     var textRes: Int = -1
     var text: String = ""
     var textSequence: CharSequence = ""
 
     @ColorRes
-    var buttonColorRes: Int = -1
+    var textColorRes: Int = -1
     @ColorInt
-    var buttonColor: Int = -1
+    var textColor: Int = -1
 
+    var textSize: Int = 16
     var typeface: Typeface? = null
-    var textAllCaps: Boolean = true
-    var shouldDismiss: Boolean = true
 
-    private var onClick: (View) -> Unit = {}
-
-    private var _text: String = ""
+    private var _message: String = ""
         get() {
-            _text = when {
+            _message = when {
                 text.isNotEmpty() -> text
                 textSequence.isNotEmpty() -> textSequence.toString()
                 textRes != -1 -> context.getString(textRes)
@@ -39,19 +36,17 @@ class ButtonBuilder(private val context: Context) {
         }
 
     @ColorInt
-    private var _buttonColor = -1
+    private var _messageColor = -1
         get() {
             field = when {
-                buttonColor != -1 -> buttonColor
-                buttonColorRes != -1 -> ContextCompat.getColor(context, buttonColorRes)
+                textColor != -1 -> textColor
+                textColorRes != -1 -> ContextCompat.getColor(context, textColorRes)
                 else -> -1
             }
             return field
         }
 
-    fun onClick(block: (View) -> Unit) {
-        onClick = block
+    fun build(): Message {
+        return Message(_message, _messageColor, typeface, textSize)
     }
-
-    fun build(): Button = Button(_text, _buttonColor, shouldDismiss, onClick, typeface, textAllCaps)
 }

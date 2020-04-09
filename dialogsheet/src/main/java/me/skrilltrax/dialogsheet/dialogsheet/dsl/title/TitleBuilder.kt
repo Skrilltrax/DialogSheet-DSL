@@ -1,13 +1,12 @@
-package com.marcoscg.dialogsheet.dsl.title
+package me.skrilltrax.dialogsheet.dialogsheet.dsl.title
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.marcoscg.dialogsheet.dsl.DialogSheetDsl
+import me.skrilltrax.dialogsheet.dialogsheet.dsl.DialogSheetDsl
 
 @DialogSheetDsl
 class TitleBuilder(private val context: Context) {

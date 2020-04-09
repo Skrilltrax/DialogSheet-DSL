@@ -1,15 +1,16 @@
-package com.marcoscg.dialogsheet.dsl
+package me.skrilltrax.dialogsheet.dialogsheet.dsl
 
 import android.content.Context
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import com.google.android.material.button.MaterialButton
-import com.marcoscg.dialogsheet.ExpandedBottomSheetDialog
+import me.skrilltrax.dialogsheet.ExpandedBottomSheetDialog
 
 data class DialogSheet(
         private var context: Context,
         private var bottomSheetDialog: ExpandedBottomSheetDialog,
         private var coloredNavigationBar: Boolean = true,
+        private var setRoundedCorner: Boolean = true,
         private var iconImageView: AppCompatImageView,
         private var titleTextView: AppCompatTextView,
         private var messageTextView: AppCompatTextView,
